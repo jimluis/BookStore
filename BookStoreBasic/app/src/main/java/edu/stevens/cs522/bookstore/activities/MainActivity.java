@@ -22,7 +22,7 @@ import android.widget.Toast;
 import edu.stevens.cs522.bookstore.entities.Book;
 import edu.stevens.cs522.bookstore.R;
 import edu.stevens.cs522.bookstore.util.BooksAdapter;
-
+//homework3
 public class MainActivity extends AppCompatActivity {
 	
 	// Use this when logging errors and warnings.
