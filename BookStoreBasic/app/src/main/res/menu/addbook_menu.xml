@@ -1,0 +1,18 @@
+<menu xmlns:tools="schemas.android.com/tools"
+    tools:context=".activities.MainActivity"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- Menu for the main BookStore activity. -->
+
+    <item
+        android:id="@+id/search"
+        app:showAsAction="ifRoom"
+        android:title="@string/search"/>
+
+    <item
+        android:id="@+id/cancel"
+        app:showAsAction="ifRoom"
+        android:title="@string/cancel"/>
+
+</menu>
