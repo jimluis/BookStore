@@ -22,10 +22,7 @@ public class CheckoutActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.checkout);
 
-		//shoppingCart1 = (ArrayList<Book>) getIntent().getParcelableExtra("test1");
 		shoppingCart = getIntent().getParcelableArrayListExtra("shoppingCart");
-		//shoppingCart = savedInstanceState.getParcelableArrayList("shoppingCart");
-//		Toast.makeText(CheckoutActivity.this, "onCreate", Toast.LENGTH_LONG).show();
 
 	}
 
@@ -44,7 +41,7 @@ public class CheckoutActivity extends AppCompatActivity {
 		super.onOptionsItemSelected(item);
 		// TODO
 		switch(item.getItemId()) {
-			case R.id.order:
+			case R.id.cancel:
 			// ORDER: display a toast message of how many books have been ordered and return
 			Toast.makeText(CheckoutActivity.this, "Your order has "+shoppingCart.size()+" book", Toast.LENGTH_LONG).show();
 			finish();
@@ -54,8 +51,6 @@ public class CheckoutActivity extends AppCompatActivity {
 			// CANCEL: just return with REQUEST_CANCELED as the result code
 
 				Intent checkOutIntent = new Intent();
-				//addingABookIntent.putExtra("bookInfo", book);
-				//setResult(MainActivity.ADD_REQUEST, addingABookIntent);
 				setResult(MainActivity.CHECKOUT_REQUEST);
 				finish();
 

@@ -52,7 +52,7 @@ public class AddBookActivity extends AppCompatActivity {
 			Book book = addBook();
 
 			Intent addingABookIntent = new Intent();
-			addingABookIntent.putExtra("bookInfo", book);
+			addingABookIntent.putExtra(BOOK_RESULT_KEY, book);
 			setResult(MainActivity.ADD_REQUEST, addingABookIntent);
 
 			finish();
@@ -63,7 +63,7 @@ public class AddBookActivity extends AppCompatActivity {
 			// CANCEL: cancel the request
 			case R.id.cancel:
 				//setResult(MainActivity.CHECKOUT_REQUEST);
-				Toast.makeText(AddBookActivity.this, "Cancelling...", Toast.LENGTH_LONG).show();
+			//	Toast.makeText(AddBookActivity.this, "Cancelling...", Toast.LENGTH_LONG).show();
 				finish();
 			break;
 		}
@@ -88,8 +88,10 @@ public class AddBookActivity extends AppCompatActivity {
 		String aut = authorTextView.getText().toString();
 
 		String[] authorName = aut.split(", ");
+		//int numOfAuthors = authorName.length;
 		ArrayList<Author> authorsList = new ArrayList<Author>();
 		Author authorInfo = new Author();
+		//Author [] authorArray = new Author[numOfAuthors];
 
 		for (int i = 0; i < authorName.length; i++)
 		{
@@ -113,22 +115,15 @@ public class AddBookActivity extends AppCompatActivity {
 				authorInfo.setLastName(authorSplit[2]);
 			}
 
+			//authorArray[i] = authorInfo;
 			authorsList.add(authorInfo);
+			authorInfo = new Author();
 		}
 
-		/*authorInfo.setFirstName(authorName[0]);
-		authorInfo.setMiddleInitial(authorName[1]);
-		authorInfo.setLastName(authorName[2]);*/
+		//bookObj.setAuthors(authorArray);
 
 		bookObj.setAuthorsAL(authorsList);
 
-		/*Intent addingABookIntent = new Intent(AddBookActivity.this, MainActivity.class);
-		addingABookIntent.putExtra("bookInfo", bookObj);
-		setResult(RESULT_OK, addingABookIntent);
-		startActivity(addingABookIntent);*/
-		//finish();
-
-		//MainActivity.shoppingCart.add(bookObj);
 
 		return bookObj;
 	}
