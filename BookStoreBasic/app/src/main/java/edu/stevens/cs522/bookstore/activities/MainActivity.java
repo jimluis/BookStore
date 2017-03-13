@@ -17,7 +17,6 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import edu.stevens.cs522.bookstore.databases.CartDbAdapter;
 import edu.stevens.cs522.bookstore.entities.Book;
 import edu.stevens.cs522.bookstore.R;
 import edu.stevens.cs522.bookstore.util.BooksAdapter;
@@ -39,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     //BooksAdapter booksArrayAdapter;
     ArrayAdapter<Book> booksArrayAdapter;
 
-    private CartDbAdapter dba;
 
     public SimpleCursorAdapter simpleCursorAdapter;
 
@@ -78,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
                 String book = String.valueOf(adapterView.getItemAtPosition(position));
-                //Toast.makeText(MainActivity.this, shoppingCart.get(position).getTitle(), Toast.LENGTH_LONG).show();
 
                 Intent viewBookIntent = new Intent(MainActivity.this, ViewBookActivity.class);
                 viewBookIntent.putExtra(ViewBookActivity.BOOK_KEY, shoppingCart.get(position));
@@ -86,14 +83,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(viewBookIntent);
             }
         });
-
-        // TODO open the database using the database adapter
-        // THis is going to call the constructor of CartDbAdapter which is where the db and the tables are getting created
-        dba = new CartDbAdapter(this);
-
-        // TODO query the database using the database adapter, and manage the cursor on the main thread
-
-        // TODO use SimpleCursorAdapter to display the cart contents.
 
 	}
 
@@ -151,36 +140,11 @@ public class MainActivity extends AppCompatActivity {
                 TextView emptyText = (TextView)findViewById(android.R.id.empty);
                 listView.setEmptyView(emptyText);
 
-
-               /* Cursor cursor = dba.fetchAllBooks();
-
-                if(cursor != null)
-                {
-                    String[] from = new String[]
-                    {
-                            dba._ID,
-                            dba.TITLE,
-                            dba.AUTHOR,
-                            dba.ISBN,
-                            dba.PRICE
-                            book.getTitle(),
-                        //    book.getAuthorsAL(),
-                            book.getIsbn(),
-                            book.getPrice()
-                    };
-
-                    int[] to = new int[] { android.R.id.text1, android.R.id.text2, android.R.id.text2  };
-
-                    simpleCursorAdapter = new SimpleCursorAdapter(this, R.id.listView, cursor, from, to, 0);
-                    listView.setAdapter(booksArrayAdapter);
-                }*/
-
                 if(shoppingCart.size() > 0)
                 {
                     for(int i = 0; i < shoppingCart.size(); i++)
                     {
                         listView.setAdapter(booksArrayAdapter);
-                        //listView.setItemsCanFocus(false); booksArrayAdapter.notifyDataSetChanged();
                         registerForContextMenu(listView);// to add a context menu to each one of the items in the list
                     }
                 }
@@ -189,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
             case CHECKOUT_REQUEST:
                 // CHECKOUT: empty the shopping cart.
-                Toast.makeText(this, "emptying shopping cart...", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Checked Out", Toast.LENGTH_LONG).show();
                 booksArrayAdapter.clear();
                 booksArrayAdapter.notifyDataSetChanged();
 

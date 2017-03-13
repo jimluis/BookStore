@@ -15,24 +15,6 @@ public class Author implements Parcelable {
 	
 	public String lastName;
 
-	/*public String toString() {
-		StringBuffer sb = new StringBuffer();
-		if (firstName != null && !"".equals(firstName)) {
-			sb.append(firstName);
-			sb.append(' ');
-		}
-
-		if (middleInitial != null && !"".equals(middleInitial)) {
-			sb.append(middleInitial);
-			sb.append(' ');
-		}
-		if (lastName != null && !"".equals(lastName)) {
-			sb.append(lastName);
-		}
-		return sb.toString();
-	}*/
-
-
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		if (firstName != null && !"".equals(firstName)) {
