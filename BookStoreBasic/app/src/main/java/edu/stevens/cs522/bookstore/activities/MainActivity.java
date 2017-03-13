@@ -2,11 +2,8 @@ package edu.stevens.cs522.bookstore.activities;
 
 import java.util.ArrayList;
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -16,9 +13,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import edu.stevens.cs522.bookstore.databases.CartDbAdapter;
 import edu.stevens.cs522.bookstore.entities.Book;
 import edu.stevens.cs522.bookstore.R;
 import edu.stevens.cs522.bookstore.util.BooksAdapter;
@@ -40,7 +39,9 @@ public class MainActivity extends AppCompatActivity {
     //BooksAdapter booksArrayAdapter;
     ArrayAdapter<Book> booksArrayAdapter;
 
-    //TextView emptyText = (TextView)findViewById(android.R.id.empty);
+    private CartDbAdapter dba;
+
+    public SimpleCursorAdapter simpleCursorAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,10 +51,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.cart);
 
         // TODO use an array adapter to display the cart  contents.
-       booksArrayAdapter = new BooksAdapter(MainActivity.this, shoppingCart);//ArrayAdapter<Book>(this, android.R.layout.simple_list_item_1, shoppingCart);
+       booksArrayAdapter = new BooksAdapter(MainActivity.this, shoppingCart);
 
         ListView listView = (ListView) findViewById(R.id.listView);
-        //listView.setEmptyView(emptyText);
+
         if(shoppingCart.size() > 0)
         {
             TextView emptyText = (TextView)findViewById(android.R.id.empty);
@@ -62,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
             for(int i = 0; i < shoppingCart.size(); i++)
             {
                 listView.setAdapter(booksArrayAdapter);
-                listView.setItemsCanFocus(false);
                 registerForContextMenu(listView);// to add a context menu (menu)to each one of the items in the list
             }
         }
+
 
         // TODO check if there is saved UI state, and if so, restore it (i.e. the cart contents)
         if(savedInstanceState != null)
@@ -77,14 +78,22 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
                 String book = String.valueOf(adapterView.getItemAtPosition(position));
-                Toast.makeText(MainActivity.this, shoppingCart.get(position).getTitle(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, shoppingCart.get(position).getTitle(), Toast.LENGTH_LONG).show();
 
                 Intent viewBookIntent = new Intent(MainActivity.this, ViewBookActivity.class);
-                viewBookIntent.putExtra("bookInfo", shoppingCart.get(position));
+                viewBookIntent.putExtra(ViewBookActivity.BOOK_KEY, shoppingCart.get(position));
                 setResult(RESULT_OK, viewBookIntent);
                 startActivity(viewBookIntent);
             }
         });
+
+        // TODO open the database using the database adapter
+        // THis is going to call the constructor of CartDbAdapter which is where the db and the tables are getting created
+        dba = new CartDbAdapter(this);
+
+        // TODO query the database using the database adapter, and manage the cursor on the main thread
+
+        // TODO use SimpleCursorAdapter to display the cart contents.
 
 	}
 
@@ -130,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         switch(resultCode) {
             case ADD_REQUEST:
                 // ADD: add the book that is returned to the shopping cart.
-                Book book =  (Book) intent.getParcelableExtra("bookInfo");
+                Book book =  (Book) intent.getParcelableExtra(AddBookActivity.BOOK_RESULT_KEY);
                 if(book != null)
                     shoppingCart.add(book);
 
@@ -142,12 +151,36 @@ public class MainActivity extends AppCompatActivity {
                 TextView emptyText = (TextView)findViewById(android.R.id.empty);
                 listView.setEmptyView(emptyText);
 
+
+               /* Cursor cursor = dba.fetchAllBooks();
+
+                if(cursor != null)
+                {
+                    String[] from = new String[]
+                    {
+                            dba._ID,
+                            dba.TITLE,
+                            dba.AUTHOR,
+                            dba.ISBN,
+                            dba.PRICE
+                            book.getTitle(),
+                        //    book.getAuthorsAL(),
+                            book.getIsbn(),
+                            book.getPrice()
+                    };
+
+                    int[] to = new int[] { android.R.id.text1, android.R.id.text2, android.R.id.text2  };
+
+                    simpleCursorAdapter = new SimpleCursorAdapter(this, R.id.listView, cursor, from, to, 0);
+                    listView.setAdapter(booksArrayAdapter);
+                }*/
+
                 if(shoppingCart.size() > 0)
                 {
                     for(int i = 0; i < shoppingCart.size(); i++)
                     {
                         listView.setAdapter(booksArrayAdapter);
-                        listView.setItemsCanFocus(false);
+                        //listView.setItemsCanFocus(false); booksArrayAdapter.notifyDataSetChanged();
                         registerForContextMenu(listView);// to add a context menu to each one of the items in the list
                     }
                 }
@@ -158,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
                 // CHECKOUT: empty the shopping cart.
                 Toast.makeText(this, "emptying shopping cart...", Toast.LENGTH_LONG).show();
                 booksArrayAdapter.clear();
+                booksArrayAdapter.notifyDataSetChanged();
 
                 break;
         }
@@ -195,14 +229,16 @@ public class MainActivity extends AppCompatActivity {
         String menuItemName = menuItems[menuItemIndex];
         String listItemName = shoppingCart.get(info.position).getTitle();
 
-        if (menuItemName.equalsIgnoreCase("Delete"))
+        if (menuItemName.equalsIgnoreCase("Delete")) {
             booksArrayAdapter.remove(booksArrayAdapter.getItem(info.position));
+            booksArrayAdapter.notifyDataSetChanged();
+        }
 
         else if (menuItemName.equalsIgnoreCase("See Details"))
         {
-            Intent viewBookIntent = new Intent(MainActivity.this, ViewBookActivity.class);
-            viewBookIntent.putExtra("bookInfo", shoppingCart.get(info.position));
-            setResult(RESULT_OK, viewBookIntent);
+            Intent viewBookIntent = new Intent(this, ViewBookActivity.class);
+            viewBookIntent.putExtra(ViewBookActivity.BOOK_KEY, shoppingCart.get(info.position));
+           // setResult(RESULT_OK, viewBookIntent);
             startActivity(viewBookIntent);
         }
 

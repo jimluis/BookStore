@@ -24,7 +24,8 @@
         android:id="@+id/search_author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="" />
+        android:text=""
+        android:hint="First Middle Last, First Middle Last"/>
 
     <TextView
         android:layout_width="wrap_content"

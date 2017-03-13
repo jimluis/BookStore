@@ -1,5 +1,7 @@
 package edu.stevens.cs522.bookstore.entities;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -7,6 +9,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
+import edu.stevens.cs522.bookstore.contracts.BookContract;
 
 public class Book implements Parcelable{
 	
@@ -16,13 +21,24 @@ public class Book implements Parcelable{
 
 	private int id;
 	private String title;
-	//private ArrayList<Author> authors;
+	//public Author[] authors;
 	private String isbn;
 	private String price;
 
-	private ArrayList<Author> authorsAL;// = new ArrayList<Author>();
+	private List<Author> authorsAL;// = new ArrayList<Author>();
 
-	public Book(){}
+	public Book(){
+	}
+
+	public Book(Book book)
+	{
+		//this.id = Integer.parseInt(BookContract.getId());
+		this.title = book.getTitle();
+		//this.authors = book.getAuthors();
+		this.authorsAL = book.getAuthorsAL();
+		this.isbn = book.getIsbn();
+		this.price = book.getPrice();
+	}
 
 	/*public Book(int id, String title, Author[] author, String isbn, String price) {
 		this.id = id;
@@ -41,12 +57,26 @@ public class Book implements Parcelable{
 		}
 	}
 
+	/*public String getFirstAuthor() {
+		if (authors != null && authors.length > 0) {
+			return authors[0].toString();
+		} else {
+			return "";
+		}
+	}*/
+
 //Returns the data saved in the parcel
 	public Book(Parcel parcel){
 		Log.i(TAG,"read Book");
 		id = parcel.readInt();
 		title = parcel.readString();
+		if (authorsAL == null){
+			authorsAL = new ArrayList<Author>();
+		}
+
 		parcel.readTypedList(authorsAL, Author.CREATOR);
+
+	//	parcel.readParcelable(Author.class.getClassLoader());
 		isbn = parcel.readString();
 		price = parcel.readString();
 
@@ -57,14 +87,13 @@ public class Book implements Parcelable{
 		return 0;
 	}
 
-	//Saves data inside a parcel incase of a screen rotation that may delete the data if not saved
+	//Saves data inside a parcel in case of a screen rotation that may delete the data if not saved
 	@Override
 	public void writeToParcel(Parcel parcel, int i) {
 		Log.i(TAG,"writeToParcel Book");
 		parcel.writeInt(this.id);
 		parcel.writeString(this.title);
 
-//		Object[] objectsAuthors= this.authors;
 		parcel.writeTypedList(this.authorsAL);
 
 		//parcel.writeTypedArray(this.authors, i);
@@ -83,7 +112,8 @@ public class Book implements Parcelable{
 		}
 
 		@Override
-		public Book[] newArray(int i) {
+		public Book[] newArray(int i)
+		{
 			return new Book[i];
 		}
 	};
@@ -128,11 +158,25 @@ public class Book implements Parcelable{
 		this.price = price;
 	}
 
-	public ArrayList<Author> getAuthorsAL() {
+	public List<Author> getAuthorsAL() {
 		return authorsAL;
 	}
 
-	public void setAuthorsAL(ArrayList<Author> authorsALIn) {
+	public void setAuthorsAL(List<Author> authorsALIn) {
 		this.authorsAL = authorsALIn;
 	}
+
+
+	public void writeToProvider(ContentValues values, String title) {
+		BookContract.putTitle(values, title);
+	 }
+
+/*	public Author[] getAuthors() {
+		return authors;
+	}
+
+	public void setAuthors(Author[] authors) {
+		this.authors = authors;
+	}*/
+
 }

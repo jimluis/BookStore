@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import edu.stevens.cs522.bookstore.R;
+import edu.stevens.cs522.bookstore.entities.Author;
 import edu.stevens.cs522.bookstore.entities.Book;
 
 public class ViewBookActivity extends AppCompatActivity {
@@ -21,19 +22,27 @@ public class ViewBookActivity extends AppCompatActivity {
 		setContentView(R.layout.view_book);
 
 		// TODO get book as parcelable intent extra and populate the UI with book details.
-		Book book = (Book) getIntent().getParcelableExtra("bookInfo");
+		Book book = (Book) getIntent().getParcelableExtra(BOOK_KEY);
 
 		TextView viewTitle = (TextView) findViewById(R.id.view_title);
 		TextView viewAuthor  = (TextView) findViewById(R.id.view_author);
 		TextView viewIsbn = (TextView) findViewById(R.id.view_isbn);
 
-//		String au = book.getAuthors().toString();
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < book.getAuthorsAL().size(); i++)
+		{
+			Author value = book.getAuthorsAL().get(i);
+
+			if(i >= 1)
+				builder.append(" , ");
+
+			builder.append(value.toString());
+		}
+		String authors = builder.toString();
 
 		viewTitle.setText(book.getTitle());
-		//viewAuthor.setText(book.getAuthors().toString());
+		viewAuthor.setText(authors);
 		viewIsbn.setText(book.getIsbn());
-
-
 
 	}
 
