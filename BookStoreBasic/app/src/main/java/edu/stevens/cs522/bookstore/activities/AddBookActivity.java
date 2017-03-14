@@ -48,7 +48,7 @@ public class AddBookActivity extends AppCompatActivity {
 		// TODO
 		switch(item.getItemId()) {
 			// ADD: return the book details to the BookStore activity
-			case R.id.search:
+			case R.id.add:
 			Book book = addBook();
 
 			Intent addingABookIntent = new Intent();
