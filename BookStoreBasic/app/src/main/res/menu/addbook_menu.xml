@@ -6,9 +6,9 @@
     <!-- Menu for the main BookStore activity. -->
 
     <item
-        android:id="@+id/search"
+        android:id="@+id/add"
         app:showAsAction="ifRoom"
-        android:title="@string/search"/>
+        android:title="@string/add"/>
 
     <item
         android:id="@+id/cancel"
