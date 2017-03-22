@@ -1,5 +1,7 @@
 package edu.stevens.cs522.bookstore.entities;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -7,29 +9,42 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.stevens.cs522.bookstore.contracts.BookContract;
+
 public class Book implements Parcelable{
 	
 	// TODO Modify this to implement the Parcelable interface.
 
 	private static final String TAG = "Book";
 
-	private int id;
+	private String id;
 	private String title;
 	private String isbn;
 	private String price;
+    private String authors;
 
-	private List<Author> authorsAL;
+	private ArrayList<Author> authorsAL;
 
 	public Book(){
 	}
 
-	public Book(Book book)
+	public Book(Cursor cursor)
+	{
+		this.id = BookContract.getId(cursor);
+		this.title = BookContract.getTitle(cursor);
+		this.authorsAL = Author.castingString(BookContract.getAuthors(cursor));
+		this.isbn = BookContract.getIsbn(cursor);
+		this.price = BookContract.getPrice(cursor);
+
+	}
+
+	/*public Book(Book book)
 	{
 		this.title = book.getTitle();
 		this.authorsAL = book.getAuthorsAL();
 		this.isbn = book.getIsbn();
 		this.price = book.getPrice();
-	}
+	}*/
 
 
 	public String getFirstAuthor() {
@@ -43,13 +58,14 @@ public class Book implements Parcelable{
 //Returns the data saved in the parcel
 	public Book(Parcel parcel){
 		Log.i(TAG,"read Book");
-		id = parcel.readInt();
+		id = parcel.readString();
 		title = parcel.readString();
 		if (authorsAL == null){
 			authorsAL = new ArrayList<Author>();
 		}
 
 		parcel.readTypedList(authorsAL, Author.CREATOR);
+		//authors = parcel.readString();
 		isbn = parcel.readString();
 		price = parcel.readString();
 
@@ -64,12 +80,10 @@ public class Book implements Parcelable{
 	@Override
 	public void writeToParcel(Parcel parcel, int i) {
 		Log.i(TAG,"writeToParcel Book");
-		parcel.writeInt(this.id);
+		parcel.writeString(this.id);
 		parcel.writeString(this.title);
-
+		//parcel.writeString(this.authors);
 		parcel.writeTypedList(this.authorsAL);
-
-		//parcel.writeTypedArray(this.authors, i);
 		parcel.writeString(this.isbn);
 		parcel.writeString(this.price);
 	}
@@ -91,11 +105,11 @@ public class Book implements Parcelable{
 		}
 	};
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -123,12 +137,45 @@ public class Book implements Parcelable{
 		this.price = price;
 	}
 
-	public List<Author> getAuthorsAL() {
+	public ArrayList<Author> getAuthorsAL() {
 		return authorsAL;
 	}
 
-	public void setAuthorsAL(List<Author> authorsALIn) {
+	public void setAuthorsAL(ArrayList<Author> authorsALIn) {
 		this.authorsAL = authorsALIn;
+	}
+
+    public String getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(String authors) {
+        this.authors = authors;
+    }
+
+    public void writeToProvider(ContentValues values)
+	{
+		BookContract.putTitle(values, title);
+		BookContract.putIsbn(values, isbn);
+		BookContract.putPrice(values, price);
+		BookContract.putAuthors(values, authorsAL.toString());
+	}
+
+	public String authorNamesString(Book book)
+	{
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < book.getAuthorsAL().size(); i++)
+		{
+			Author value = book.getAuthorsAL().get(i);
+
+			if(i >= 1)
+				builder.append(" , ");
+
+			builder.append(value.toString());
+		}
+		String authors = builder.toString();
+
+		return authors;
 	}
 
 }

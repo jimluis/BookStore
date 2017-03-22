@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import edu.stevens.cs522.bookstore.R;
+import edu.stevens.cs522.bookstore.databases.CartDbAdapter;
 import edu.stevens.cs522.bookstore.entities.Author;
 import edu.stevens.cs522.bookstore.entities.Book;
 
@@ -26,6 +27,7 @@ public class AddBookActivity extends AppCompatActivity {
 	// Use this as the key to return the book details as a Parcelable extra in the result intent.
 	public static final String BOOK_RESULT_KEY = "book_result";
 	private static final String TAG = AddBookActivity.class.getCanonicalName();
+    CartDbAdapter db;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -76,54 +78,20 @@ public class AddBookActivity extends AppCompatActivity {
 		TextView searchTitle = (TextView) findViewById(R.id.search_title);
 		TextView searchIsbn = (TextView) findViewById(R.id.search_isbn);
 		TextView authorTextView = (TextView) findViewById(R.id.search_author);
-		//Author authors = (Author)authorTextView;
+        TextView price = (TextView) findViewById(R.id.price);
 
-		//author = author.toString().split(",");
 		Log.i(TAG, "Title: " + searchTitle.getText().toString());
 		Log.i(TAG, "ISBN: " + searchIsbn.getText().toString());
 
 		bookObj.setTitle(searchTitle.getText().toString());
 		bookObj.setIsbn(searchIsbn.getText().toString());
+        bookObj.setPrice(price.getText().toString());
+
 
 		String aut = authorTextView.getText().toString();
+		Author authorInfo = new Author(aut);
 
-		String[] authorName = aut.split(", ");
-		//int numOfAuthors = authorName.length;
-		ArrayList<Author> authorsList = new ArrayList<Author>();
-		Author authorInfo = new Author();
-		//Author [] authorArray = new Author[numOfAuthors];
-
-		for (int i = 0; i < authorName.length; i++)
-		{
-			String[] authorSplit = authorName[i].split(" ");
-
-			if(authorSplit.length == 1)
-			{
-				authorInfo.setFirstName(authorSplit[0]);
-			}
-
-			else if(authorSplit.length == 2)
-			{
-				authorInfo.setFirstName(authorSplit[0]);
-				authorInfo.setLastName(authorSplit[1]);
-			}
-
-			else if(authorSplit.length == 3)
-			{
-				authorInfo.setFirstName(authorSplit[0]);
-				authorInfo.setMiddleInitial(authorSplit[1]);
-				authorInfo.setLastName(authorSplit[2]);
-			}
-
-			//authorArray[i] = authorInfo;
-			authorsList.add(authorInfo);
-			authorInfo = new Author();
-		}
-
-		//bookObj.setAuthors(authorArray);
-
-		bookObj.setAuthorsAL(authorsList);
-
+		bookObj.setAuthorsAL(authorInfo.getAuthorsList());
 
 		return bookObj;
 	}

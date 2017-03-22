@@ -12,6 +12,7 @@
     <string name="author">Author:</string>
     <string name="isbn">ISBN:</string>
     <string name="order">Order</string>
+    <string name="price">Price:</string>
 
     <string name="empty_cart">THE CART IS EMPTY!</string>
 </resources>

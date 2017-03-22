@@ -27,6 +27,7 @@ public class ViewBookActivity extends AppCompatActivity {
 		TextView viewTitle = (TextView) findViewById(R.id.view_title);
 		TextView viewAuthor  = (TextView) findViewById(R.id.view_author);
 		TextView viewIsbn = (TextView) findViewById(R.id.view_isbn);
+        TextView viewPrice = (TextView) findViewById(R.id.view_price);
 
 		StringBuilder builder = new StringBuilder();
 		for(int i = 0; i < book.getAuthorsAL().size(); i++)
@@ -43,6 +44,7 @@ public class ViewBookActivity extends AppCompatActivity {
 		viewTitle.setText(book.getTitle());
 		viewAuthor.setText(authors);
 		viewIsbn.setText(book.getIsbn());
+        viewPrice.setText(book.getPrice());
 
 	}
 
