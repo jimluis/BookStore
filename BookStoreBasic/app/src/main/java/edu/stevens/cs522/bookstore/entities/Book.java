@@ -30,11 +30,11 @@ public class Book implements Parcelable{
 
 	public Book(Cursor cursor)
 	{
-		this.id = BookContract.getId(cursor);
-		this.title = BookContract.getTitle(cursor);
-		this.authorsAL = Author.castingString(BookContract.getAuthors(cursor));
-		this.isbn = BookContract.getIsbn(cursor);
-		this.price = BookContract.getPrice(cursor);
+		id = BookContract.getId(cursor);
+		title = BookContract.getTitle(cursor);
+		authorsAL = Author.castingString(BookContract.getAuthors(cursor));
+		isbn = BookContract.getIsbn(cursor);
+		price = BookContract.getPrice(cursor);
 
 	}
 
@@ -65,7 +65,6 @@ public class Book implements Parcelable{
 		}
 
 		parcel.readTypedList(authorsAL, Author.CREATOR);
-		//authors = parcel.readString();
 		isbn = parcel.readString();
 		price = parcel.readString();
 
@@ -158,15 +157,15 @@ public class Book implements Parcelable{
 		BookContract.putTitle(values, title);
 		BookContract.putIsbn(values, isbn);
 		BookContract.putPrice(values, price);
-		BookContract.putAuthors(values, authorsAL.toString());
+		BookContract.putAuthors(values, authorNamesString(authorsAL));
 	}
 
-	public String authorNamesString(Book book)
+	public String authorNamesString(ArrayList<Author> authorsAL)
 	{
 		StringBuilder builder = new StringBuilder();
-		for(int i = 0; i < book.getAuthorsAL().size(); i++)
+		for(int i = 0; i < authorsAL.size(); i++)
 		{
-			Author value = book.getAuthorsAL().get(i);
+			Author value = authorsAL.get(i);
 
 			if(i >= 1)
 				builder.append(" , ");

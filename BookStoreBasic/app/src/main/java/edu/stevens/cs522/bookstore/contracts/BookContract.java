@@ -51,13 +51,11 @@ public class BookContract implements BaseColumns {
         return SEPARATOR.split(in);
     }
 
-    private static int authorColumn = -1;
 
     public static String getAuthors(Cursor cursor) {
-        if (authorColumn < 0) {
-            authorColumn =  cursor.getColumnIndexOrThrow(AUTHORS);;
-        }
-        return cursor.getString(authorColumn);//readStringArray(cursor.getString(authorColumn));
+
+        return  cursor.getString(cursor.getColumnIndexOrThrow(AUTHORS));
+
     }
 
 

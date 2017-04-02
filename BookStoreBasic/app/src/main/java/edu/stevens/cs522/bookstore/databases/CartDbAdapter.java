@@ -26,29 +26,33 @@ public class CartDbAdapter {
 
     private static final String AUTHOR_TABLE = "authors";
 
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 5;
 
     public static final String _ID = "_id";
     public static final String TITLE = "title";
     public static final String AUTHOR = "author";
     public static final String ISBN = "isbn";
     public static final String PRICE = "price";
-    public static final String BOOK_FK = "book_fk";
+    public static final String BOOK_ID = "book_id";
 
     public static final String _AID = "_id";
     public static final String NAME = "name";
     public static final String MIDDLENAME = "middlename";
     public static final String LASTNAME = "lastname";
 
-    public static final String GET_BOOK_DATA = "SELECT b._id, b.title, b.price, b.isbn, GROUP_CONCAT(a.name,'|') as authors  FROM books b JOIN authors a ON b._id = a.book_fk and b._id = ? GROUP BY b._id, b.title, b.price, b. isbn ";
+    public static final String GET_BOOK_DATA = "SELECT b._id, b.title, b.price, b.isbn, GROUP_CONCAT(a.name,'|') as author  FROM books b JOIN authors a ON b._id = a.book_id GROUP BY b._id, b.title, b.price, b. isbn ";
     // SQL Statement to create a new database.
-
-    //SELECT b._id, b.title, b.price, b.isbn, GROUP_CONCAT(a.name,'|') as authors  FROM books b, authors a where b._id = a.book_fk and b._id = 4 GROUP BY b._id, b.title, b.price, b. isbn
-    //
+    
     private DatabaseHelper dbHelper;
 
     private SQLiteDatabase db;
 
+    private final Context context;
+
+    public CartDbAdapter(Context _context) {
+        this.context = _context;
+        dbHelper = new DatabaseHelper(_context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
 
     public static class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -58,7 +62,6 @@ public class CartDbAdapter {
                 + AUTHOR + " text not null, "
                 + ISBN + " text not null, "
                 + PRICE + " text "
-                //+ BOOKID + " text not null "
                 + ")";
         // TODO
 
@@ -67,13 +70,13 @@ public class CartDbAdapter {
                 + NAME + " text, "
                 + MIDDLENAME + " text, "
                 + LASTNAME + " text, "
-                + BOOK_FK + " INTEGER NOT NULL, " +
-                "FOREING KEY "+BOOK_FK+" REFERENCES "+BOOK_TABLE+" ("+_ID+") ON DELETE CASCADE"
+                + BOOK_ID + " INTEGER NOT NULL, " +
+                "FOREING KEY "+BOOK_ID+" REFERENCES "+BOOK_TABLE+" ("+_ID+") ON DELETE CASCADE"
                 +
                 ")";
         // TODO
 
-        private static final String AUTHOR_INDEX = "CREATE INDEX AuthorsBookIndex ON Authors("+BOOK_FK+")";
+        private static final String AUTHOR_INDEX = "CREATE INDEX AuthorsBookIndex ON Authors("+BOOK_ID+")";
 
         public DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -106,9 +109,7 @@ public class CartDbAdapter {
     }
 
 
-    public CartDbAdapter(Context _context) {
-        dbHelper = new DatabaseHelper(_context, DATABASE_NAME, null, DATABASE_VERSION);
-    }
+
 
     //opening the db
     public void open() throws SQLException {
@@ -123,15 +124,13 @@ public class CartDbAdapter {
                 new String[] {_ID, TITLE, AUTHOR},
                 null, null, null, null, null);*/
         db = dbHelper.getReadableDatabase();
-        //String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit
-       //SELECT b._id, b.title, b.price, b.isbn, GROUP_CONCAT(a.name,'|') as authors  FROM books b JOIN authors a ON b._id = a.book_fk GROUP BY b._id, b.title, b.price, b. isbn
 
-        Cursor cursor = db.query(BOOK_TABLE,
+       /* Cursor cursor = db.query(BOOK_TABLE,
                 new String[] {_ID, TITLE, AUTHOR, ISBN, PRICE},
-                null, null, null, null, null);
+                null, null, null, null, null); */
 
-      //  Cursor cursor = db.rawQuery(GET_BOOK_DATA, null);
-        if(cursor != null)
+        Cursor cursor = db.rawQuery(GET_BOOK_DATA, null);
+        if(cursor != null && cursor.getCount() > 0)
         {
             cursor.moveToFirst();
             return cursor;
@@ -147,8 +146,18 @@ public class CartDbAdapter {
         // TODO
         Book book = new Book();
         // TODO Return cursor to row and populate instance of Book
-        Cursor cursor;// = db.query(BOOK_TABLE, new String[] {}, rowId, null);
-        return book;
+        db = dbHelper.getReadableDatabase();
+
+        Cursor cursor =  db.query(BOOK_TABLE, new String[] {_ID, TITLE, AUTHOR, ISBN, PRICE}, _ID + "= ?", new String[]{String.valueOf(rowId)}, null, null, null);
+        if(cursor != null && cursor.getCount() > 0)
+        {
+            cursor.moveToFirst();
+            book = new Book(cursor);
+            return book;
+        }
+
+        else
+            return null;
     }
 
     public boolean persist(Book book) throws SQLException {
@@ -156,11 +165,11 @@ public class CartDbAdapter {
 
         ContentValues contentValues = new ContentValues();
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        contentValues.put(TITLE, book.getTitle()); // etc
+        book.writeToProvider(contentValues);
+        /*contentValues.put(TITLE, book.getTitle()); // etc
         contentValues.put(AUTHOR,book.authorNamesString(book));//book.getAuthorsAL()); // etc
         contentValues.put(ISBN, book.getIsbn()); // etc
-        contentValues.put(PRICE, book.getPrice()); // etc
+        contentValues.put(PRICE, book.getPrice()); // etc*/
 
         //Author authors = fetchAuthors(book.getId());
 
@@ -190,7 +199,7 @@ public class CartDbAdapter {
         // TODO
     //Deleting from both tables
         db.delete(BOOK_TABLE, _ID + "=" + book.getId(), null);
-        return db.delete(AUTHOR_TABLE, BOOK_FK + "=" + book.getId(), null);
+        return db.delete(AUTHOR_TABLE, BOOK_ID + "=" + book.getId(), null);
     }
 
     public Integer deleteAll() {
@@ -236,10 +245,11 @@ public class CartDbAdapter {
     public boolean persistAuthors(Author authors) throws SQLException {
         // TODO
         ContentValues contentValues = new ContentValues();
-        contentValues.put(NAME, authors.getFirstName()); // etc
+        authors.writeToProviders(contentValues);
+       /* contentValues.put(NAME, authors.getFirstName()); // etc
         contentValues.put(MIDDLENAME, authors.getMiddleInitial()); // etc
         contentValues.put(LASTNAME, authors.getLastName()); // etc
-        contentValues.put(BOOK_FK, authors.getBookId()); // etc
+        contentValues.put(BOOK_FK, authors.getBookId()); // etc*/
 
 
         Long result = db.insert(AUTHOR_TABLE, null, contentValues);

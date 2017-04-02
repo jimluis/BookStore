@@ -1,9 +1,12 @@
 package edu.stevens.cs522.bookstore.entities;
 
+import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+
+import edu.stevens.cs522.bookstore.contracts.AuthorContract;
 
 public class Author implements Parcelable {
 	
@@ -20,6 +23,7 @@ public class Author implements Parcelable {
 	public String lastName;
 
 	public Long bookId;
+
 
 	public ArrayList<Author> authorsList = new ArrayList<Author>();
 
@@ -52,6 +56,8 @@ public class Author implements Parcelable {
 			}
 
 			//authorArray[i] = authorInfo;
+			long tempBookId = -1;
+			authorInfo.setBookId(tempBookId);
 			authorsList.add(authorInfo);
 			authorInfo = new Author();
 		}
@@ -100,6 +106,7 @@ public class Author implements Parcelable {
 		firstName = parcel.readString();
 		middleInitial = parcel.readString();
 		lastName = parcel.readString();
+		//bookId = parcel.readLong();
 	}
 
 	public int describeContents() {
@@ -111,6 +118,14 @@ public class Author implements Parcelable {
 		parcel.writeString(this.firstName);
 		parcel.writeString(this.middleInitial);
 		parcel.writeString(this.lastName);
+		//parcel.writeLong(this.bookId);
+	}
+
+	public void writeToProviders(ContentValues values) {
+		AuthorContract.putFirstName(values, firstName);
+		AuthorContract.putMiddleInitial(values, middleInitial);
+		AuthorContract.putLastName(values, lastName);
+		AuthorContract.putBookId(values, String.valueOf(bookId));
 	}
 
 	public static final Creator<Author> CREATOR = new Creator<Author>() {
@@ -173,6 +188,7 @@ public class Author implements Parcelable {
 	public void setAuthorsList(ArrayList<Author> authorsList) {
 		this.authorsList = authorsList;
 	}
+
 
 	public static ArrayList<Author> castingString(String aut)
 	{

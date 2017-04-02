@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                startManagingCursor(cursor);
                 Book book = new Book(cursor);
 
                 Intent viewBookIntent = new Intent(MainActivity.this, ViewBookActivity.class);
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         TextView emptyText = (TextView)findViewById(android.R.id.empty);
         listView.setEmptyView(emptyText);
 
-        if(cursor != null)
+        if(cursor != null && cursor.getCount() > 0)
             generateList(cursor);
 
     }
@@ -196,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
         String menuItemName = menuItems[menuItemIndex];
 
         Cursor cursor = (Cursor)listView.getItemAtPosition(info.position);
-
+        startManagingCursor(cursor);
         Book book = new Book(cursor);
 
         if (menuItemName.equalsIgnoreCase("Delete")) {
@@ -230,6 +231,9 @@ public class MainActivity extends AppCompatActivity {
                 {
                     dba.TITLE,
                     dba.AUTHOR,
+                   // dba.PRICE,
+                    // dba._ID,
+                    //dba.ISBN
                 };
 
         int[] toViewIds = new int[] { R.id.cart_row_title, R.id.cart_row_author};//{ R.id.cart_row_title, R.id.cart_row_author};

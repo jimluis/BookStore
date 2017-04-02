@@ -22,7 +22,7 @@ public class CheckoutActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.checkout);
 
-		shoppingCart = getIntent().getParcelableArrayListExtra("shoppingCart");
+		//shoppingCart = getIntent().getParcelableArrayListExtra("shoppingCart");
 
 	}
 
@@ -43,7 +43,7 @@ public class CheckoutActivity extends AppCompatActivity {
 		switch(item.getItemId()) {
 			case R.id.cancel:
 			// ORDER: display a toast message of how many books have been ordered and return
-			Toast.makeText(CheckoutActivity.this, "Your order has "+shoppingCart.size()+" book", Toast.LENGTH_LONG).show();
+//			Toast.makeText(CheckoutActivity.this, "Your order has "+shoppingCart.size()+" book", Toast.LENGTH_LONG).show();
 			finish();
 			break;
 
